@@ -25,7 +25,7 @@ const getSingleBook = async (req, res) => {
 };
 
 
-const addNewBook = async (req, res) => {
+var addNewBook = async (req, res) => {
     try {
         const newFormFile = req.body;
         const newBook = await book.create(newFormFile);
@@ -35,7 +35,7 @@ const addNewBook = async (req, res) => {
         res.status(500).json({ message: "Error creating book", error: err.message });
     }
 };
-const updateBook = async (req, res) => {
+var updateBook = async (req, res) => {
     try {
         const id = req.params.id;
         const updateData = req.body;
@@ -54,7 +54,7 @@ const updateBook = async (req, res) => {
         res.status(500).json({ message: "Error updating book", error: err.message });
     }
 };
-const deleteBook = async (req, res) => {
+var deleteBook = async (req, res) => {
     try {
         const id = req.params.id;
         const deletedBook = await book.findByIdAndDelete(id);
