@@ -1,32 +1,78 @@
-const products = require("../model/products")
-var Products = require("../model/products")
-const { get } = require("../routes/Products-Routes")
+const mongoose = require("mongoose");
+const Products = require("../model/products");
 
-var getAllProducts = async(req,res)=>{
-    var myProducts = await products.find()
-    res.status(200).json(myProducts)
-}
-var getSingleProducts = async(req,res)=>{
-    var productId =  req.params.id
-    var singleProduct = await productId.findById(productId)
-    res.status(201).json(singleProduct)
-}
-var addNewProduct = async(req,res)=>{
-    var newProduct = req.body
-    var newPro = await Products.create(newProduct)
-    res.status(201).json(newPro)
-}
-var updateProduct = async(req,res)=>{
-    var update = req.body
-    var id = req.params.id
-    var updateMyProduct = await products.findByIdAndUpdate(id,update)
-    res.status(201).json(updateMyProduct)
-}
-var deleteProduct = async(req,res)=>{
-    var deleteId = req.params.id
-    var deleteProduct = products.findByIdAndDelete(deleteId)
-    res.status(200).json(deleteProduct)
-}
+const getAllProducts = async (req, res) => {
+    try {
+        const allProducts = await Products.find();
+        res.status(200).json(allProducts);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+const getSingleProduct = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({ error: "Invalid product ID" });
+        }
+        const singleProduct = await Products.findById(productId);
+        if (!singleProduct) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+        res.status(200).json(singleProduct);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+const addNewProduct = async (req, res) => {
+    try {
+        const newProduct = req.body;
+        const savedProduct = await Products.create(newProduct);
+        res.status(201).json(savedProduct);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+const updateProduct = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({ error: "Invalid product ID" });
+        }
+        const updates = req.body;
+        const updatedProduct = await Products.findByIdAndUpdate(productId, updates, { new: true, runValidators: true });
+        if (!updatedProduct) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+        res.status(200).json(updatedProduct);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+const deleteProduct = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({ error: "Invalid product ID" });
+        }
+        const deletedProduct = await Products.findByIdAndDelete(productId);
+        if (!deletedProduct) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+        res.status(200).json({ message: "Product deleted successfully", deletedProduct });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 module.exports = {
-    getAllProducts,getSingleProducts,addNewProduct,updateProduct,deleteProduct
-}
+    getAllProducts,
+    getSingleProduct,
+    addNewProduct,
+    updateProduct,
+    deleteProduct,
+};

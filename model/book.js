@@ -1,5 +1,5 @@
-var mongoose = require("mongoose")
-var book = new mongoose.Schema({
+const mongoose = require("mongoose")
+const book = new mongoose.Schema({
     title : String,
     price : Number,
     Author : String,
